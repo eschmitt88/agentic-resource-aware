@@ -5,3 +5,4 @@ skills; read by `/lint`.
 
 2026-05-21 19:18 discover resource-aware-agentic-systems n=10
 2026-05-21 19:26 fetch-paper 2603.26499 → raw/papers/hambardzumyan2026aira.pdf
+2026-05-21 19:28 ingest raw/papers/hambardzumyan2026aira.pdf
