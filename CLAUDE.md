@@ -5,7 +5,12 @@ principles; this file refines them for this project.
 
 ## What this project is about
 
-One or two sentences. Fill in when the project stops being exploratory.
+How to plan, schedule, and resource-allocate concurrent autonomous-research
+agents on a single multi-tenant workstation. The workload mix is unpredictable
+(paper-research, ML training, tool-using sweeps) with very different CPU /
+RAM / GPU / token profiles. The output is both a literature & concept
+knowledge graph and a working coordinator policy that admits, throttles, or
+defers jobs against real-time resource state.
 
 ## Layout (see user CLAUDE.md for the full rationale)
 
