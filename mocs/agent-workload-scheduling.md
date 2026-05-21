@@ -9,6 +9,8 @@ member_concepts:
   - mixed-criticality-preemption
   - flow-level-concurrency
   - priority-weighted-proportional-allocation
+  - temporal-aware-scheduling
+  - two-tier-scheduling-hierarchy
 related_mocs:
   - autonomous-research-agent-architecture
 tags:
@@ -41,6 +43,13 @@ of a single agent).
 - [[priority-weighted-proportional-allocation]] — concrete O(N)
   allocation algorithm (`dᵢ = λᵢ · Rᵢ · Pᵢ`, proportional + minimum +
   normalize). The arithmetic underneath the policy.
+- [[temporal-aware-scheduling]] — adds prediction: warm-up affinity
+  on the short scale, switching-cost minimization on the long scale.
+  Lifts the policy from reactive to anticipatory.
+- [[two-tier-scheduling-hierarchy]] — splits slow strategic
+  decisions from fast tactical ones. The architectural skeleton that
+  carries all the above concepts; already implicit in the project as
+  `budget.yaml` (macro) + `/plan` (micro).
 
 ## Primary sources
 
@@ -50,6 +59,9 @@ of a single agent).
 - [[zhang2025adaptive]] — Adaptive GPU Allocation (GWU 2025):
   concrete proportional-allocation algorithm with priority and
   minimum-guarantee terms.
+- [[du2025temporal]] — TORTA (Shenzhen UAT + China Mobile 2025):
+  two-tier RL + optimal-transport scheduler with temporal awareness;
+  data-center scale but two-tier framing transfers directly.
 
 ## Open questions
 
