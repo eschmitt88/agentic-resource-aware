@@ -12,3 +12,4 @@ skills; read by `/lint`.
 2026-05-21 19:36 ingest raw/papers/zhang2025adaptive.pdf
 2026-05-21 19:36 promote-moc autonomous-research-agent-architecture (5 concepts)
 2026-05-21 19:36 promote-moc agent-workload-scheduling (5 concepts)
+2026-05-21 21:07 fetch-paper 2507.10259 → raw/papers/du2025temporal.pdf
