@@ -9,6 +9,7 @@ related_concepts:
   - heterogeneous-accelerator-coordination
   - reactive-vs-proactive-agent-flows
   - mixed-criticality-preemption
+  - two-tier-scheduling-hierarchy
 related_experiments: []
 tags:
   - algorithm
