@@ -5,9 +5,11 @@ status: seedling
 added: "2026-05-21"
 sources:
   - literature/papers/wei2025agent.md
+  - literature/papers/zhang2025adaptive.md
 related_concepts:
   - mixed-criticality-preemption
   - flow-level-concurrency
+  - priority-weighted-proportional-allocation
 related_experiments: []
 tags:
   - taxonomy
