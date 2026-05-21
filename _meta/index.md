@@ -21,6 +21,15 @@ concepts seeded from AIRA² ([[hambardzumyan2026aira]]) —
 in the same area land and the cluster has more than one source per
 concept.
 
+**MoC candidate (pre-threshold) — `agent-workload-scheduling`**: 4
+concepts seeded from Agent.xpu ([[wei2025agent]]) —
+[[reactive-vs-proactive-agent-flows]],
+[[heterogeneous-accelerator-coordination]],
+[[mixed-criticality-preemption]], [[flow-level-concurrency]].
+Below the ≥5 threshold; expect to cross it once Adaptive GPU
+Resource Allocation (2512.22149) or Temporal-Aware GPU Allocation
+(2507.10259) is fetched and ingested.
+
 ## Active experiments
 
 (list of `experiments/YYYY-MM-DD-<slug>/` folders currently in flight)
