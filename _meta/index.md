@@ -12,23 +12,13 @@ and `/new-experiment`.
 
 (promote a cluster of ≥5 related concepts into `mocs/<theme>.md`)
 
-**MoC candidate — `autonomous-research-agent-architecture`**: 5
-concepts seeded from AIRA² ([[hambardzumyan2026aira]]) —
-[[structural-bottlenecks-in-research-agents]],
-[[asynchronous-multi-gpu-worker-pool]],
-[[hidden-consistent-evaluation]], [[react-agent-operator]],
-[[evolutionary-search-over-solutions]]. Promote once 1–2 more papers
-in the same area land and the cluster has more than one source per
-concept.
-
-**MoC candidate (pre-threshold) — `agent-workload-scheduling`**: 4
-concepts seeded from Agent.xpu ([[wei2025agent]]) —
-[[reactive-vs-proactive-agent-flows]],
-[[heterogeneous-accelerator-coordination]],
-[[mixed-criticality-preemption]], [[flow-level-concurrency]].
-Below the ≥5 threshold; expect to cross it once Adaptive GPU
-Resource Allocation (2512.22149) or Temporal-Aware GPU Allocation
-(2507.10259) is fetched and ingested.
+- [[autonomous-research-agent-architecture]] — the inside view of a
+  single autonomous research agent; 5 members, anchored on AIRA²
+  ([[hambardzumyan2026aira]]).
+- [[agent-workload-scheduling]] — the outside view of multiple
+  concurrent agents sharing one workstation; 5 members, anchored on
+  Agent.xpu ([[wei2025agent]]) and Adaptive GPU Allocation
+  ([[zhang2025adaptive]]). This is the project's load-bearing MoC.
 
 ## Active experiments
 
