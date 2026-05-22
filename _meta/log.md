@@ -15,3 +15,5 @@ skills; read by `/lint`.
 2026-05-21 21:07 fetch-paper 2507.10259 → raw/papers/du2025temporal.pdf
 2026-05-21 21:09 ingest raw/papers/du2025temporal.pdf
 2026-05-21 21:11 propose priority-weighted-admission-replay
+2026-05-22 01:30 defer proposal priority-weighted-admission-replay (premature optimization)
+2026-05-22 01:30 design-doc docs/system-design/01-requirements.md (draft)
