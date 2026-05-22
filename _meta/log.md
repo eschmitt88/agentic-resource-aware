@@ -17,3 +17,4 @@ skills; read by `/lint`.
 2026-05-21 21:11 propose priority-weighted-admission-replay
 2026-05-22 01:30 defer proposal priority-weighted-admission-replay (premature optimization)
 2026-05-22 01:30 design-doc docs/system-design/01-requirements.md (draft)
+2026-05-22 02:15 design-doc docs/system-design/01-requirements.md (rev-2: autonomy-first; P1-P7; R10-R14; N7-N11)
