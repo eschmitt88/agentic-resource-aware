@@ -3,6 +3,9 @@ kind: design-doc
 title: "System requirements — agentic resource-aware coordinator"
 status: draft
 added: "2026-05-22"
+revisions:
+  - "rev-1 2026-05-22: initial draft"
+  - "rev-2 2026-05-22: autonomy-first vision; operating principles; R10–R14, N7–N11; taxonomy recast to blocking/background"
 supersedes: []
 superseded_by: []
 related_mocs:
@@ -12,230 +15,299 @@ related_mocs:
 
 # System requirements — agentic resource-aware coordinator
 
-This document is a **draft**. It exists to write down what the system
-is supposed to do and what sessions promise it, *before* we evaluate
-competing algorithms or policies. Open questions are marked
-explicitly; gaps in the literature corpus are flagged with `[GAP]`.
+Draft. Open questions are marked `[Q-N]`. Literature gaps are
+marked `[GAP]`.
 
 ## 1. Vision
 
-One workstation hosts multiple concurrent research projects with an
-unpredictable workload mix:
+**The user is present for a small fraction of the time. Autonomy is
+the design center, not a feature.**
 
-- **Interactive work**: user is present, expects sub-second feedback
-  from skills like `/discover`, `/propose`, `/run`, `/headroom`.
-- **Background work**: cron-scheduled `/digest`, overnight
-  `/iterate --chain`, `/implement` subagent runs that can take hours.
-- **Mixed-profile resource demand**: some sessions are token-heavy
-  (paper-research, ideation), some GPU-heavy (training, eval), some
-  CPU-heavy (data scraping), some idle (waiting on external APIs).
+The system runs on one workstation hosting multiple research
+projects. Each project has a stated goal. Most of the time the user
+is away, and agents are advancing those goals using the available
+tokens and compute — exploring, ingesting, proposing, implementing,
+iterating — without supervision. When the user is present, their
+attention is the scarcest resource in the system and the most
+expensive to consume.
 
-The coordinator's job is to make admission, throttling, and
-preemption decisions so interactive sessions stay responsive and
-background work makes steady progress, without the user manually
-orchestrating which project gets the GPU when.
+The coordinator's job is to make that mode work: keep the agents
+fed with the resources they need, prevent collisions when several
+goals want the same hardware, surface only the work-product the
+user actually has to see, and stay out of the way otherwise.
 
-This is the *outside view* of multiple agents sharing one
-workstation. The *inside view* of any one agent (its operator,
-search, evaluation) is anchored in
-[[autonomous-research-agent-architecture]] and not this document's
-concern.
+Inside-view (what makes one agent good) lives in
+[[autonomous-research-agent-architecture]]. This doc is the
+outside-view contract.
 
-## 2. Functional requirements
+## 2. Operating principles
 
-What the system must DO. Each is anchored to an ingested concept or
-paper. `[MAY]` means optional / nice-to-have, default is "must."
+The philosophical commitments that constrain every requirement
+below. When two requirements conflict, principles decide.
 
-- **R1. Workload classification.** Every session must declare itself
-  as **reactive** or **proactive** at start. Reactive = user-present,
-  latency-critical. Proactive = background, throughput-critical.
+- **P1. Autonomy by default.** Agents advance toward stated goals
+  using available resources. They do not gate work on user input
+  when exploration could disambiguate. They stop only on
+  goal-shift, irreversible action, or genuine strategic forks.
+- **P2. User attention is the scarcest resource.** Every question
+  to the user, every dashboard interrupt, every summary must
+  justify its cost in attention. Default action: don't ask.
+- **P3. Principles over prescription.** Skills follow simple
+  principles, not rigid scripts. Hard contracts apply only where
+  the system has mechanical state to protect — the job database,
+  the resource API, the audit log. Everywhere else, judgment.
+- **P4. Token budget is a target, not a cap.** Default target
+  ~75% utilization of both windows (5-hour rolling, weekly Monday
+  reset). Headroom is for spikes, not a savings account. Burn
+  budget toward goals; don't hoard.
+- **P5. Single-tenant default; multi-tenant when needed.** One
+  active high-priority job uses the box. Two or more concurrent
+  high-priority jobs trigger active resource partitioning.
+- **P6. Skills stay simple; the orchestrator carries complexity.**
+  A skill is a short prompt with a few tools. The orchestrator has
+  the full state — telemetry, history, queue, budget, project
+  goals — and the judgment to use it.
+- **P7. Summaries are the user interface.** Reports, `/wrap`
+  entries, dashboard panels: concise, no jargon, no lingo, fit for
+  someone who hasn't seen the work, readable in 30 seconds.
+
+## 3. Functional requirements
+
+What the system must DO. Each is anchored to a principle, a
+literature concept, or both. `[MAY]` = optional.
+
+- **R1. Workload classification.** Every session declares itself
+  as **blocking** or **background** at start.
+  - *Blocking*: user is actively waiting OR a hard deadline /
+    external trigger applies. Highest priority when set. Expected
+    to be rare under P1.
+  - *Background*: autonomous goal-pursuit. The default. Includes
+    sub-shapes (goal-driven exploration, scheduled maintenance,
+    chained experiments) that the policy may treat differently
+    but the orchestrator handles uniformly.
+
   Anchored in [[reactive-vs-proactive-agent-flows]] from
-  [[wei2025agent]].
+  [[wei2025agent]] (taxonomy recast: "reactive" assumed user
+  presence; "blocking" is the more accurate label given P1).
 
-- **R2. Resource declaration.** Every session must declare its
-  expected resource footprint at start: tokens, GPU minutes, RAM,
-  disk, wall-time. Estimates can be revised mid-flight. Anchored in
-  [[priority-weighted-proportional-allocation]] (the algorithm needs
-  `Rᵢ` to work) and [[zhang2025adaptive]].
+- **R2. Resource declaration.** Every session declares its
+  expected footprint at start: tokens, GPU minutes, vRAM, RAM,
+  disk, wall-time. Estimates may revise mid-flight. Anchored in
+  [[priority-weighted-proportional-allocation]] from
+  [[zhang2025adaptive]].
 
-- **R3. Admission decision.** The coordinator decides admit / defer /
-  queue for each session based on declared footprint + priority +
-  current resource availability + global budget. Decision is logged
-  with a reason.
+- **R3. Admission decision.** Coordinator decides admit / defer /
+  queue from declared footprint + priority + current availability
+  + global budget shape (P4). Under P4, when budget is plentiful,
+  default-admit background sessions; gate only when constrained.
 
-- **R4. Mixed-criticality preemption.** Reactive sessions may
-  preempt proactive sessions at safe checkpoints; preempted proactive
-  work resumes when reactive load drops, with slack-aware piggybacking
-  to avoid starvation. Anchored in [[mixed-criticality-preemption]]
-  from [[wei2025agent]].
+- **R4. Mixed-criticality preemption.** Blocking sessions may
+  preempt background sessions at safe checkpoints; preempted work
+  resumes when load drops, with slack-aware piggybacking. Anchored
+  in [[mixed-criticality-preemption]] from [[wei2025agent]].
 
 - **R5. Auditability.** Every session and decision lands in a
-  persistent log (`jobs`, `decisions` in `state.db`). Without this,
-  no policy can be evaluated post-hoc and the framework is unfalsifiable.
+  persistent log (`jobs`, `decisions`). Without this no policy can
+  be evaluated and the framework is unfalsifiable.
 
-- **R6. Pluggable policy.** The admission/preemption logic is a
-  swappable component (`coordinator/policy.py`). Naive,
+- **R6. Pluggable policy.** Admission/preemption logic is a
+  swappable module (`coordinator/policy.py`). Naive,
   priority-weighted, temporal-aware, learned — all sit behind the
   same interface. Anchored in
   [[priority-weighted-proportional-allocation]] and
   [[two-tier-scheduling-hierarchy]].
 
-- **R7. Manual override.** The user can always force-admit or
-  force-defer a session, with the decision logged as `verdict='override'`.
+- **R7. Manual override.** User can always force-admit /
+  force-defer. Logged as `verdict='override'`, never gated.
 
-- **R8. `[MAY]` Temporal awareness.** The coordinator may pre-warm
+- **R8. `[MAY]` Temporal awareness.** Coordinator may pre-warm
   environments or defer expensive work based on historical demand
-  patterns. Anchored in [[temporal-aware-scheduling]] from
-  [[du2025temporal]]. Optional because it requires a non-trivial
-  amount of history before any predictor is useful — bootstrap
-  problem.
+  patterns and budget-window position (5-h, weekly). Anchored in
+  [[temporal-aware-scheduling]] from [[du2025temporal]]. Optional
+  pending sufficient history.
 
-- **R9. Two-tier separation.** Slow strategic decisions (budgets,
-  model roles, ceilings) live in declarative config; fast tactical
-  decisions (per-session admission, preemption) live in code.
-  Already partially implemented as `budget.yaml` + `/plan`. Anchored
-  in [[two-tier-scheduling-hierarchy]] from [[du2025temporal]].
+- **R9. Two-tier separation.** Slow strategic decisions in
+  declarative config; fast tactical decisions in code. Already
+  shaped as `budget.yaml` (macro) + `/plan` (micro). Anchored in
+  [[two-tier-scheduling-hierarchy]] from [[du2025temporal]].
 
-## 3. Non-functional requirements
+- **R10. Goal declaration.** Each project declares one or more
+  goals in a structured form the coordinator and skills can read.
+  Goals are the input to autonomous exploration (R11). Without
+  declared goals, "advance toward the user's goal" is undefined.
+  See `[Q-9]` for goal-model shape.
 
-How well, and under what constraints.
+- **R11. Autonomous exploration.** Under P1+P4, when budget
+  allows and a session encounters uncertainty, it explores
+  candidate paths against the project goal rather than stopping
+  to ask the user. The exploration cost is bounded by remaining
+  budget; the alternatives explored are journaled for review.
 
-- **N1. Decision latency.** Admission decision must complete in
-  < 100 ms. Interactive sessions must not stall on the coordinator.
+- **R12. Open-questions surface.** The system maintains, per
+  project, a list of open questions the agent has queued for
+  asynchronous user review. The user can dismiss, answer, or
+  comment; agents read responses on next session. Surface is the
+  dashboard (new template, see `[Q-10]`). Mirrors a project-local
+  file (`docs/open_questions.md`) for grep-ability.
 
-- **N2. Footprint.** Single-process SQLite is sufficient. No
-  distributed scheduler, no extra daemons beyond what already exists.
+- **R13. Summary discipline.** Every user-facing artifact
+  (`/wrap` entry, dashboard panel, work summary, end-of-chain
+  report) obeys P7. The `/wrap` skill and dashboard templates
+  enforce this by shape; agents enforce it in tone.
 
-- **N3. Zero-config default.** A newly scaffolded project must work
-  with the coordinator out of the box, with sensible defaults from
+- **R14. Multi-tenant compute management.** When ≥2 high-priority
+  workloads need CPU / GPU / RAM concurrently, coordinator
+  actively partitions (cgroups, CUDA MPS / MIG, RAM ceilings).
+  Single-tenant default — one active job takes the box. Anchored
+  in [[heterogeneous-accelerator-coordination]] from
+  [[wei2025agent]] + [[zhang2025adaptive]]. See `[Q-12]`.
+
+## 4. Non-functional requirements
+
+How well, under what constraints.
+
+- **N1. Decision latency.** Admission decision < 100 ms.
+- **N2. Footprint.** Single-process SQLite. No distributed
+  scheduler. No daemons beyond what already runs.
+- **N3. Zero-config default.** New project works with the
+  coordinator out of the box from
   `~/.claude/templates/project/budget.yaml`. No per-project tuning
-  required to participate.
+  required.
+- **N4. Reversibility.** Every coordinator decision logged with a
+  human-readable reason. Nothing destructive. Overrides logged,
+  not gated.
+- **N5. Graceful non-compliance.** A skill that skips the
+  declaration protocol still runs; telemetry still flows. It just
+  doesn't participate in admission. This is how the system
+  bootstraps without big-bang skill rewrites.
+- **N6. Cache-warmth.** The 5-min prompt cache (Anthropic API) is
+  a real resource. Decisions that cause cache misses on
+  user-facing sessions cost more than they save.
+- **N7. Token budget shape.** Target ~75% utilization of both
+  windows (5-h rolling, weekly Monday reset). `ccusage.py` is the
+  source of truth for current consumption. Coordinator tunes
+  admission aggressiveness against window position: aggressive
+  early in window, conservative late.
+- **N8. Question economy.** Agent → user questions are
+  rate-limited and weighted by importance. Cheap, frequent
+  questions are a bug. Each question must answer "what about this
+  cannot be resolved by exploration in the remaining budget?"
+  before it is sent. Open questions accumulate on the dashboard
+  (R12), not in chat.
+- **N9. Skill simplicity.** Skill prompts stay under ~200 lines.
+  Complexity belongs in the orchestrator, which has full state.
+  Multi-step skill machinery should consolidate, not proliferate.
+- **N10. Memory-aware ML scheduling.** For workloads that train
+  or run inference, coordinator can declare per-job vRAM and RAM
+  ceilings, and partition (MIG / MPS / cgroups) when concurrent
+  ML jobs run. A solo ML job is allowed to grab everything; two
+  concurrent jobs are not.
+- **N11. Orchestrator data access.** The component making
+  scheduling decisions has read access to all telemetry —
+  `token_events`, `hardware_samples`, `ccusage` window state,
+  per-project goal + open-questions list, recent job history.
+  Decisions must be explainable from that data alone.
 
-- **N4. Reversibility.** Every coordinator decision is logged with a
-  human-readable reason. Nothing is destructive. Force-overrides are
-  logged, not gated.
+## 5. Out of scope (non-goals)
 
-- **N5. Graceful non-compliance.** If a skill skips the declaration
-  protocol, the system degrades gracefully — telemetry from
-  `token_events` and `hardware_samples` is still collected, and the
-  session can still run, but it doesn't participate in admission.
-  This is how the system bootstraps: not every skill files jobs on
-  day one.
+- Multi-machine scheduling. One workstation.
+- Adversarial scheduling. Single trusted user.
+- Replacing the user as final arbiter. Coordinator recommends; the
+  user (or agents on the user's behalf, per P1) decides.
+- LLM-API quota logic beyond `ccusage.py`.
+- General-purpose job scheduling (Slurm, k8s, Ray). Opinionated
+  for LLM-agent workloads.
 
-- **N6. Cache-warmth.** The 5-min prompt cache (Anthropic API) is a
-  real resource — coordinator decisions that cause cache misses for
-  interactive sessions cost more than they save. Decisions that
-  affect interactive sessions should prefer cache-warm continuations
-  over cold restarts.
+## 6. Current state vs. requirements
 
-## 4. Out of scope (explicit non-goals)
+Snapshot of `~/.claude/state.db` + coordinator + dashboard as of
+2026-05-22.
 
-- **Multi-machine scheduling.** One workstation. If we ever need
-  more, that's a different project.
-- **Adversarial scheduling.** Single trusted user; no QoS classes
-  for untrusted tenants.
-- **Replacing the user as final arbiter.** The coordinator
-  *recommends*; the user (via `/plan` invocation, override flag, or
-  ignoring it) decides.
-- **LLM-API quota tracking beyond `ccusage.py`.** Anthropic's plan
-  tier rules are owned by `ccusage.py`; the coordinator reads from
-  it, doesn't duplicate the logic.
-- **General-purpose job scheduling** (Slurm, k8s, Ray). The
-  coordinator is opinionated about LLM-agent workloads specifically.
-
-## 5. Current state vs. requirements
-
-Snapshot of `~/.claude/state.db` and the coordinator code as of
-2026-05-22:
-
-| Requirement | Status | Evidence / gap |
+| Req | Status | Evidence / gap |
 |---|---|---|
-| R1 (reactive/proactive tag) | **Missing** | No `flow_class` column on `jobs`; no skill emits the tag. |
-| R2 (resource declaration) | **Partial — schema only** | `est_tokens / est_gpu_minutes / est_vram_gb` columns exist; only `/plan` and `/headroom` skills reference the coordinator. |
+| R1 (blocking/background) | **Missing** | No flow-class column on `jobs`; no skill emits a tag. Taxonomy recast in rev-2; original "reactive/proactive" not implemented either. |
+| R2 (resource declaration) | **Partial — schema only** | `est_tokens / est_gpu_minutes / est_vram_gb` exist; only `/plan` and `/headroom` reference the coordinator. |
 | R3 (admission decision) | **Partial — schema only** | `decisions` table exists; **0 rows after 4 weeks**. |
-| R4 (preemption) | **Missing** | No preemption mechanism; no safe-checkpoint primitive defined. |
-| R5 (auditability) | **Partial** | `token_events` (242 rows) and `hardware_samples` (16,402 rows) are flowing. `jobs` and `decisions` are not. |
-| R6 (pluggable policy) | **Implemented** | `coordinator/policy.py` exists as a module. Verify on next pass. |
-| R7 (manual override) | **Unknown** | Need to read `policy.py` and `/plan` skill. |
-| R8 (temporal awareness) | **Not started** | Optional; no predictor or trace analysis exists. |
-| R9 (two-tier separation) | **Implemented in shape** | `budget.yaml` (macro) + `/plan` (micro) exists. Macro is hand-edited, not learned. |
-| N1 (< 100 ms) | **Unknown** | No latency measurement of `/plan` round-trip. |
-| N2 (single SQLite) | **Met** | Already this. |
-| N3 (zero-config) | **Met** | Template provides default `budget.yaml`. |
-| N4 (reversibility) | **Met** | All writes via writers.py, none destructive. |
-| N5 (graceful degradation) | **Met by accident** | Telemetry runs independent of job declaration. |
-| N6 (cache-warmth) | **Not considered** | No mechanism today. |
+| R4 (preemption) | **Missing** | No mechanism; no safe-checkpoint primitive defined. |
+| R5 (auditability) | **Partial** | `token_events` (242), `hardware_samples` (16,402) flowing. `jobs` / `decisions` empty. |
+| R6 (pluggable policy) | **Shape exists** | `coordinator/policy.py` module present. Implementation depth not yet verified. |
+| R7 (manual override) | **Unknown** | Read `policy.py` + `/plan` to confirm. |
+| R8 (temporal awareness) | **Not started** | Optional. |
+| R9 (two-tier) | **Implemented in shape** | `budget.yaml` + `/plan`. Macro hand-edited, not learned. |
+| R10 (goal declaration) | **Missing** | No goal schema. Project `CLAUDE.md` has a "What this project is about" field but it's prose, not structured. |
+| R11 (autonomous exploration) | **Missing** | Agents stop on uncertainty today. Pre-rev-2 the design assumed they should. |
+| R12 (open-questions surface) | **Missing** | Dashboard templates exist for queue / candidates / concepts / literature / projects, none for open-questions or work-product comments. |
+| R13 (summary discipline) | **Partial — by skill** | `/wrap` shape enforces Did/Findings/Next; dashboard summaries inconsistent. |
+| R14 (multi-tenant compute) | **Missing** | No cgroups / MIG / MPS integration. |
+| N1 (< 100 ms) | **Unknown** | No latency benchmark. |
+| N2 (single SQLite) | **Met** | |
+| N3 (zero-config) | **Met** | |
+| N4 (reversibility) | **Met** | |
+| N5 (graceful non-compliance) | **Met by accident** | Telemetry runs independent of declaration. |
+| N6 (cache-warmth) | **Not considered** | |
+| N7 (token budget shape) | **Partial — caps only** | `budget.yaml` caps `max_tokens`; no window-aware shaping; `ccusage.py` exists but not wired to admission. |
+| N8 (question economy) | **Cultural — no mechanism** | |
+| N9 (skill simplicity) | **Mostly met** | Most skills ≤150 lines. `/implement` is longest, but inherent. |
+| N10 (memory-aware ML) | **Missing** | |
+| N11 (orchestrator data access) | **Met for telemetry; missing for goals + open-questions** | Telemetry exists; goal + open-question schemas don't. |
 
-The headline gap is **R1+R2+R3+R5 form a connected dead zone** — no
-session declares itself, so no admission decision is made, so the
-audit trail is empty, so no policy can be evaluated. Until sessions
-start declaring (R1+R2), nothing downstream works. That's the
-bootstrap problem.
+**Headline gaps**:
+1. **R1+R2+R3+R5 dead zone** — no session declares → no decision →
+   empty audit → no policy can be evaluated. Bootstrap problem.
+2. **R10+R11+R12 autonomy gap** — no goals declared, no autonomous
+   exploration mode, no open-questions surface. The system isn't
+   set up for the autonomy P1 calls for.
+3. **N7 missing window awareness** — `ccusage.py` knows the
+   windows; admission ignores them.
 
-## 6. Open questions
+## 7. Open questions
 
-These are deliberately not answered here — they're the inputs to the
-**conventions** doc (`02-session-conventions.md`) and to follow-up
-research. Marked `[Q-N]` for cross-reference.
+- **Q-1.** Canonical *unit of work* — "session" vs "job" vs "flow"?
+  Provisional: session = one Claude Code invocation (has session_id);
+  job = a declared work-unit inside a session (may be multiple per
+  session, e.g. `/iterate --chain` files N jobs).
+- **Q-2.** How skills *declare* — explicit `declare_job` call,
+  hook-driven inference, or YAML frontmatter? Tilt toward
+  frontmatter + hook (skills stay simple per N9; orchestrator does
+  the work per P6).
+- **Q-3.** Safe-checkpoint primitive per job kind?
+- **Q-4.** How priorities are set — static default, user flag,
+  learned, deadline?
+- **Q-5.** Unified currency across GPU-seconds and LLM tokens?
+- **Q-6.** Macro-layer: hand-edited (today) or learned predictor?
+- **Q-7.** Session ↔ job relationship: 1:1, 1:N, or independent?
+- **Q-8.** `[GAP]` UX of admission deferrals + asynchronous
+  open-questions review. Need ≥1 paper on interactive scheduling
+  perception or async-feedback UX.
+- **Q-9.** Goal model — per-project, per-session, hierarchical?
+  Editable mid-flight by the agent?
+- **Q-10.** Open-questions surface shape — dashboard template + a
+  project-local `docs/open_questions.md` file? Both? Source of
+  truth?
+- **Q-11.** Question-economy enforcement — hard cap (≤N
+  questions/window) or pure heuristic? Or a "question budget" that
+  trades off against token budget?
+- **Q-12.** Memory partitioning mechanism for concurrent ML —
+  CUDA MPS, MIG, container cgroups, hard OOM? Trade-offs and
+  fall-throughs not yet evaluated.
 
-- **Q-1.** What's the canonical *unit of work* — "session," "job,"
-  "flow," or some hybrid? `wei2025agent` says "flow"; the existing
-  `state.db` says "job"; a `/iterate --chain` invocation contains
-  many of either.
+## 8. Anchored in literature
 
-- **Q-2.** How do skills *declare* themselves to the coordinator?
-  Explicit `declare_job` call at skill start? Hook-driven inference
-  from tool calls? A YAML frontmatter field on every skill?
-
-- **Q-3.** What's the safe-checkpoint primitive for preemption per
-  job kind? DVC stage boundary, LLM turn boundary, training-step
-  boundary — these are not interchangeable.
-
-- **Q-4.** How are priorities set? Static per-skill default,
-  user-flag override, learned from outcomes, deadline-driven?
-  [[temporal-aware-scheduling]] notes priorities probably need to
-  drift over time.
-
-- **Q-5.** Is there a unified currency across GPU-seconds and LLM
-  tokens? The literature treats them as separate budgets; the user's
-  setup has both as real costs.
-
-- **Q-6.** Macro-layer: hand-edited config (today's `budget.yaml`)
-  or learned predictor? The trade-off is the bootstrap problem (a
-  learned predictor needs history) vs. ongoing maintenance burden.
-
-- **Q-7.** What's the relationship between a "session" (Claude Code
-  session, has a `session_id`) and a "job" (coordinator's
-  declared-resource unit)? 1:1, 1:N, or independent axes? The
-  current `token_events` schema treats them as the session being
-  primary; `jobs` treats them as separable.
-
-- **Q-8.** `[GAP]` Literature corpus is heavy on infrastructure /
-  systems papers and light on human-factors / UX work — how does a
-  user *experience* admission deferrals? Need to fetch at least one
-  paper on interactive scheduling perception or borrow from
-  real-time-system UX literature.
-
-## 7. Anchored in literature
-
-- [[hambardzumyan2026aira]] — names the three structural bottlenecks
-  that bind agent performance; HCE protocol; async multi-GPU pool.
-- [[wei2025agent]] — reactive/proactive flow taxonomy;
-  mixed-criticality preemption; flow-level concurrency as a runtime
-  abstraction; heterogeneous accelerator coordination.
+- [[hambardzumyan2026aira]] — structural bottlenecks; HCE; async
+  multi-GPU pool; ReAct.
+- [[wei2025agent]] — flow taxonomy (rev-2 recast as
+  blocking/background); mixed-criticality preemption; flow-level
+  concurrency; heterogeneous accelerator coordination.
 - [[zhang2025adaptive]] — concrete O(N)
-  priority-weighted-proportional allocation algorithm
-  (`dᵢ = λᵢ · Rᵢ · Pᵢ` + minimum guarantee + capacity normalize).
-- [[du2025temporal]] — two-tier scheduling hierarchy (macro RL+OT,
-  micro server-selection); temporal-aware demand prediction;
+  priority-weighted-proportional allocation.
+- [[du2025temporal]] — two-tier hierarchy; temporal-aware demand;
   switching-cost minimization.
 
-## 8. What this document is and is not
+## 9. What this doc is and is not
 
-It **is**: a draft of the system's contract with itself. It will be
-revised — RFC-style — as conventions are worked out and constraints
-are discovered.
+**Is**: the system's contract with itself. RFC-style; revised in
+place as conventions stabilize and constraints surface.
 
-It **is not**: a roadmap or a task list. Conversion to actionable
-work happens in `02-session-conventions.md` (the protocol) and in
-`docs/decisions/NNNN-*.md` (lightweight ADRs for specific calls).
+**Is not**: a roadmap or task list. Conversion to actionable work
+happens in `02-session-conventions.md` (the protocol) and in
+`docs/decisions/NNNN-*.md` (lightweight ADRs).
