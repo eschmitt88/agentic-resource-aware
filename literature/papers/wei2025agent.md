@@ -11,12 +11,20 @@ authors:
   - Maoliang Li
   - Xiang Chen
   - Guojie Luo
+institutions:
+  - "School of Computer Science, Peking University"
+  - "The University of Hong Kong"
+  - "National Key Laboratory for Multimedia Information Processing, Peking University"
 year: 2025
 venue: arXiv 2506.24045
+peer_reviewed: false
 url: https://arxiv.org/abs/2506.24045
+code_url: null
+citations: null
 source: "raw/papers/wei2025agent.pdf"
 added: "2026-05-21"
 relevance: 5
+credibility: 3
 status: skimmed
 related_experiments: []
 related_concepts:
@@ -109,6 +117,15 @@ reduction vs iGPU-only and serial NPU-iGPU baselines.
   run."
 - No public code release reference seen in the skim — would need to
   verify whether the system is reproducible or proprietary.
+
+## Trust signals
+
+- **Credibility:** 3 — strong academic group (Peking University, plus
+  HKU), thorough profiling and a well-specified system evaluated against
+  industrial iGPU and tuned NPU-iGPU baselines. Held to 3 (not 4)
+  because it is an arXiv preprint with no peer-review imprint and no
+  public code release was found in the skim, so reproducibility is
+  unconfirmed.
 
 ## Follow-up
 

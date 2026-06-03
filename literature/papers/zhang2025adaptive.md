@@ -5,12 +5,18 @@ authors:
   - Guilin Zhang
   - Wulan Guo
   - Ziqi Tan
+institutions:
+  - "Department of Engineering Management and Systems Engineering, George Washington University, USA"
 year: 2025
 venue: arXiv 2512.22149 (George Washington University)
+peer_reviewed: false
 url: https://arxiv.org/abs/2512.22149
+code_url: null
+citations: null
 source: "raw/papers/zhang2025adaptive.pdf"
 added: "2026-05-21"
 relevance: 4
+credibility: 2
 status: skimmed
 related_experiments: []
 related_concepts:
@@ -85,6 +91,14 @@ workload (lightweight coordinator + 3 specialists).
 - No reference to LLM-token cost — purely GPU-utilization framing.
   The coordinator needs a unified currency across GPU-seconds and
   API tokens.
+
+## Trust signals
+
+- **Credibility:** 2 — single-institution preprint (George Washington
+  University) with three authors; arXiv only, no peer-review imprint;
+  evaluation is simulation-only with no released code, and N=4 agents.
+  The algorithm is clearly specified and easy to re-derive, but no
+  empirical artifact backs the headline 85% number.
 
 ## Follow-up
 

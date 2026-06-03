@@ -8,12 +8,19 @@ authors:
   - Haojie Wang
   - Bo Liu
   - Jialong Li
+institutions:
+  - "School of Computer Science and Control Engineering, Shenzhen University of Advanced Technology, Shenzhen, China"
+  - "China Mobile Research Institute, Beijing, China"
 year: 2025
 venue: arXiv 2507.10259 (Shenzhen Univ. of Adv. Tech. + China Mobile Research)
+peer_reviewed: false
 url: https://arxiv.org/abs/2507.10259
+code_url: null
+citations: null
 source: "raw/papers/du2025temporal.pdf"
 added: "2026-05-21"
 relevance: 4
+credibility: 2
 status: skimmed
 related_experiments: []
 related_concepts:
@@ -95,6 +102,14 @@ operational cost vs reactive baselines.
 - Demand prediction needs historical data. The coordinator has
   `state.db` already; the question is whether the log there is
   rich enough to learn a useful temporal model.
+
+## Trust signals
+
+- **Credibility:** 2 — single mid-tier university lab (Shenzhen Univ. of
+  Advanced Technology) plus an industrial research arm (China Mobile);
+  arXiv preprint typeset in the IEEE LaTeX template with no
+  peer-review imprint; no released code or artifacts; simulation-only
+  evaluation. Framing is transferable but the result is unverifiable.
 
 ## Follow-up
 

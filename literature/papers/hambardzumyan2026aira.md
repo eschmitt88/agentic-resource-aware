@@ -9,12 +9,20 @@ authors:
   - Michael Kuchnik
   - Martin Josifoski
   - "+20 others (FAIR Meta, UCL, Oxford)"
+institutions:
+  - "FAIR at Meta"
+  - "University College London"
+  - "University of Oxford"
 year: 2026
 venue: arXiv 2603.26499
+peer_reviewed: false
 url: https://arxiv.org/abs/2603.26499
+code_url: null
+citations: null
 source: "raw/papers/hambardzumyan2026aira.pdf"
 added: "2026-05-21"
 relevance: 5
+credibility: 4
 status: skimmed
 related_experiments: []
 related_concepts:
@@ -101,6 +109,15 @@ AIRS-Bench tasks.
 - HCE assumes a clean split exists. For projects without a held-out
   test set (literature curation, data scraping), the protocol is
   inapplicable — what does the equivalent discipline look like there?
+
+## Trust signals
+
+- **Credibility:** 4 — top-tier industrial lab (FAIR at Meta) with UCL
+  and Oxford co-authors, large named author roster, strong empirical
+  result against established baselines on MLE-bench and AIRS-Bench with
+  ablations. Held back from 5 because it is an arXiv preprint (not yet
+  peer-reviewed) and no public code/artifact link was found on the
+  first page.
 
 ## Follow-up
 
