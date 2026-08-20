@@ -6,6 +6,13 @@ max_experiments: 20
 max_consecutive_no_improvement: 3
 max_disk_gb: 500
 
+# Autonomy level. "standard" (default) = propose and wait for confirmation.
+# "max" = fetch / ingest / propose / iterate autonomously while the
+# coordinator's agency verdict permits and the ceilings above hold — use
+# `claude-coordinator-agency` to gauge token + hardware headroom.
+# See ~/claude-system/claude/rules/agency.md.
+agency: max
+
 # Model roles. Skills read these as the defaults; CLI flags override per-call.
 models:
   ideator: "opus"
@@ -16,6 +23,6 @@ hardware:
   gpu_model: "NVIDIA RTX 5080"
   gpu_memory_gb: 16
   gpu_count: 1
-  system_ram_gb: 64    # edit to match
+  system_ram_gb: 92
   storage_path: "/mnt/projects"
   storage_free_gb: 3400
