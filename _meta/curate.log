@@ -1,0 +1,22 @@
+Curation complete — `raw/_candidates/` is empty of uncurated files.
+
+**Dispositions** (10 items, all arXiv IDs verified live against the API first — no link-rot):
+
+| | Item | Disposition |
+|---|---|---|
+| 1–4 | AIRA², Agent.xpu, Adaptive GPU Allocation, TORTA | already in graph |
+| 5 | AIRS-Bench | ingested → `lupidi2026airs` |
+| 6 | ML-Agent | ingested → `liu2025mlagent` |
+| 7 | MLR-Copilot | **declined** — 2024 predecessor whose pipeline is already covered by AIRA² and instantiated by this repo's own skill chain; no resource-allocation content |
+| 8 | BAVT (Spend Less, Reason Better) | ingested → `li2026spend` |
+| 9 | Multi-agent collaboration study | ingested → `shen2026empirical` |
+| 10 | Awesome-Efficient-Agents | ingested as its **companion survey** → `yang2026toward` (arXiv 2601.14192) rather than the link list — the repo is the paper's reading list, the paper carries the analysis. Repo kept as a `/discover` seed. |
+
+**Most useful finds.** Item 9 is the closest published match to this project's setup — one workstation, fixed per-candidate budget, Git worktree isolation — and measures subagents (7 improvements/50 rounds, resilient but greedy) against expert teams (3, fragile but structurally deep). Its budget excludes LLM inference and debugging, so on a token-bound box the subagent advantage should be *larger* than reported. Item 8 offers the cheapest answer to the MoC's standing "unified currency" question: don't convert GPU-seconds to tokens, reduce to the tightest normalized remaining ratio and condition on that scalar. Item 5's Appendix D is a cross-benchmark compute-envelope table ($123/run for RE-Bench, ~1,800 GPU-h for MLE-Bench) to size local runs against.
+
+**Graph changes:** 5 literature notes, 6 new concepts, 4 existing concepts gained sources/links, `agent-workload-scheduling` extended 7 → 9 members. No dead wikilinks. Three commits pushed.
+
+Two things for you:
+
+- **No new MoC.** The budget/efficiency-accounting cluster is at 4 concepts — one short of ripe — and I declined to pad it to 5 with `hidden-consistent-evaluation`, which is about split hygiene rather than cost. It's recorded as a candidate in `_meta/index.md`; the next efficiency-flavoured ingest likely tips it.
+- **`raw/papers/yang2026toward.pdf` is 17.8 MB**, over the >10 MB → DVC line in `.claude/rules/data.md`. I committed it to git anyway to stay consistent with `hambardzumyan2026aira.pdf` (14.5 MB, already tracked there) rather than split `raw/papers/` across two systems. Worth one decision for the whole directory — the blobs are in history either way now, so a `dvc add` only helps going forward.

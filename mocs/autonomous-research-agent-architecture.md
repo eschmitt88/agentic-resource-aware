@@ -11,6 +11,7 @@ member_concepts:
   - evolutionary-search-over-solutions
 related_mocs:
   - agent-workload-scheduling
+  - budget-aware-evaluation
 tags:
   - architecture
   - autonomous-research

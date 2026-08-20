@@ -20,6 +20,10 @@ and `/new-experiment`.
   Agent.xpu ([[wei2025agent]]), Adaptive GPU Allocation
   ([[zhang2025adaptive]]), and TORTA ([[du2025temporal]]). This is
   the project's load-bearing MoC.
+- [[budget-aware-evaluation]] — the measurement view: what counts as a
+  result on a budgeted box; 5 members, anchored on *Toward Efficient
+  Agents* ([[yang2026toward]]) and AIRS-Bench ([[lupidi2026airs]]).
+  Promoted 2026-08-20 from the "agent efficiency accounting" candidate.
 
 ## Active experiments
 
@@ -27,11 +31,9 @@ and `/new-experiment`.
 
 ## MoC candidates
 
-- **agent efficiency accounting** — 4 concepts and climbing
-  ([[fixed-budget-evaluation-protocol]], [[efficiency-metric-taxonomy]],
-  [[cost-per-trajectory-frontier]],
-  [[budget-conditioned-exploration-exploitation]]). One short of ripe;
-  the next efficiency-flavoured ingest likely tips it.
+(none ripe — the "agent efficiency accounting" candidate was promoted
+2026-08-20 as [[budget-aware-evaluation]], with
+[[hidden-consistent-evaluation]] cross-listed in as its fifth member.)
 
 ## Open questions
 
