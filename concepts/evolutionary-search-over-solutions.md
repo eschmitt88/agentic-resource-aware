@@ -5,8 +5,13 @@ status: seedling
 added: "2026-05-21"
 sources:
   - literature/papers/hambardzumyan2026aira.md
+  - literature/papers/lupidi2026airs.md
+  - literature/papers/li2026spend.md
+  - literature/papers/shen2026empirical.md
 related_concepts:
   - asynchronous-multi-gpu-worker-pool
+  - budget-conditioned-exploration-exploitation
+  - worktree-isolated-parallel-search
 related_experiments: []
 tags:
   - search
