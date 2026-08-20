@@ -11,6 +11,8 @@ member_concepts:
   - priority-weighted-proportional-allocation
   - temporal-aware-scheduling
   - two-tier-scheduling-hierarchy
+  - collaboration-topology-tradeoff
+  - worktree-isolated-parallel-search
 related_mocs:
   - autonomous-research-agent-architecture
 tags:
@@ -50,6 +52,15 @@ of a single agent).
   decisions from fast tactical ones. The architectural skeleton that
   carries all the above concepts; already implicit in the project as
   `budget.yaml` (macro) + `/plan` (micro).
+- [[collaboration-topology-tradeoff]] — *how* the admitted agents are
+  organized is itself an allocation decision: subagents buy throughput
+  and resilience, expert teams buy depth at a deliberation cost that
+  comes straight out of the budget. Turns "how many jobs" into "how many
+  jobs, arranged how".
+- [[worktree-isolated-parallel-search]] — the isolation primitive that
+  makes parallel candidates safe to run at all, plus a four-state
+  proposal taxonomy (proposal failure / preflight failure / training
+  crash / success) that makes failure legible per candidate.
 
 ## Primary sources
 
@@ -62,6 +73,13 @@ of a single agent).
 - [[du2025temporal]] — TORTA (Shenzhen UAT + China Mobile 2025):
   two-tier RL + optimal-transport scheduler with temporal awareness;
   data-center scale but two-tier framing transfers directly.
+- [[shen2026empirical]] — Multi-agent collaboration for automated
+  research (UTS + SUSTech 2026): the closest published match to this
+  project's setup — one box, fixed per-candidate budget, worktree
+  isolation — and the empirical answer to subagents-vs-teams.
+- [[li2026spend]] — BAVT (UBC + Vector 2026): budget-conditioned
+  exploration/exploitation *within* an admitted job, and a candidate
+  answer to the unified-currency question below.
 
 ## Open questions
 
@@ -74,7 +92,16 @@ of a single agent).
   workloads they probably need to respond to deadlines, attention
   signal, and progress.
 - Is there a unified currency across GPU-seconds, RAM-GB-hours, and
-  LLM tokens? Current literature treats them as separate budgets.
+  LLM tokens? Current literature treats them as separate budgets —
+  though [[li2026spend]] offers the cheapest plausible answer: don't
+  convert, just reduce to the *tightest* normalized remaining ratio,
+  `r = min(used_i / ceiling_i)`, and condition the policy on that one
+  scalar. Untested above trajectory scale.
+- What observable, available at **admission time**, predicts a deep
+  architectural refactor vs a broad shallow sweep? That is the routing
+  signal [[collaboration-topology-tradeoff]] needs, and neither
+  [[shen2026empirical]] nor [[yang2026toward]] supplies it — both name
+  routing as future work.
 - What's the safe-checkpoint primitive for preempting different job
   types (dvc stage boundary, LLM-turn boundary, training-step
   boundary)?
@@ -82,7 +109,7 @@ of a single agent).
 ## Why this MoC is here
 
 This is the project's load-bearing MoC. The coordinator's policy
-(`coordinator/policy.py`) is its tangible deliverable, and the five
+(`coordinator/policy.py`) is its tangible deliverable, and the nine
 concepts here are the policy's vocabulary. Experiments under
 `experiments/` should be ablations and validations of policy
 variants drawn from this MoC.

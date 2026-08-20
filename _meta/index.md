@@ -16,7 +16,7 @@ and `/new-experiment`.
   single autonomous research agent; 5 members, anchored on AIRA²
   ([[hambardzumyan2026aira]]).
 - [[agent-workload-scheduling]] — the outside view of multiple
-  concurrent agents sharing one workstation; 7 members, anchored on
+  concurrent agents sharing one workstation; 9 members, anchored on
   Agent.xpu ([[wei2025agent]]), Adaptive GPU Allocation
   ([[zhang2025adaptive]]), and TORTA ([[du2025temporal]]). This is
   the project's load-bearing MoC.
