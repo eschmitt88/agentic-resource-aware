@@ -5,6 +5,7 @@ discovered: 2026-05-21
 source: discover
 n_requested: 10
 n_returned: 10
+curated: 2026-08-20
 ---
 
 ## 1. AIRA²: Overcoming Bottlenecks in AI Research Agents
@@ -76,3 +77,46 @@ n_returned: 10
 - type: repo
 - summary: Curated survey of efficiency-focused LLM-agent work spanning memory, tool learning, and planning — entry point into adjacent literature not surfaced by individual searches.
 - reason: The "what am I missing?" backstop. Worth a single pass to identify subtopics (memory compression, tool selection cost) that deserve their own /discover run later.
+
+## Curation
+
+Curated 2026-08-20 under `agency: max` with the coordinator verdict at
+GO/high (17% weekly quota used, 111 h to reset, CPU/RAM/GPU idle).
+All ten arXiv IDs were verified live against the arXiv API before any
+disposition — none were link-rot.
+
+1. **AIRA²** (2603.26499) — already in graph → [[hambardzumyan2026aira]].
+2. **Agent.xpu** (2506.24045) — already in graph → [[wei2025agent]].
+3. **Adaptive GPU Resource Allocation** (2512.22149) — already in graph →
+   [[zhang2025adaptive]].
+4. **Temporal-Aware GPU Resource Allocation (TORTA)** (2507.10259) —
+   already in graph → [[du2025temporal]].
+5. **AIRS-Bench** (2602.06855) — ingested → [[lupidi2026airs]].
+   Seeds [[fixed-budget-evaluation-protocol]]; Appendix D's cross-benchmark
+   compute-envelope table is the reusable artifact.
+6. **ML-Agent** (2505.23723) — ingested → [[liu2025mlagent]]. Kept for the
+   cost axis rather than the RL method: <$0.01/trajectory at parity with
+   GPT-5-backed agents bears directly on `budget.yaml` model roles.
+   Seeds [[cost-per-trajectory-frontier]].
+7. **MLR-Copilot** (2408.14033) — declined — superseded prior art: the
+   2024 paper→proposal→experiment pipeline it describes is already
+   represented in the graph by AIRA² ([[hambardzumyan2026aira]]) and
+   instantiated by this repo's own skill chain, and it carries no
+   resource-allocation content.
+8. **Spend Less, Reason Better (BAVT)** (2603.12634) — ingested →
+   [[li2026spend]]. Seeds [[budget-conditioned-exploration-exploitation]] —
+   the within-job budget layer beneath the coordinator's across-job one.
+9. **An Empirical Study of Multi-Agent Collaboration** (2603.29632) —
+   ingested → [[shen2026empirical]]. Closest published match to this
+   project's setup (one box, fixed budget, worktree isolation). Seeds
+   [[collaboration-topology-tradeoff]] and
+   [[worktree-isolated-parallel-search]].
+10. **Awesome-Efficient-Agents** (github.com/yxf203/Awesome-Efficient-Agents)
+    — ingested as its companion **survey** → [[yang2026toward]]
+    (arXiv 2601.14192, "Toward Efficient Agents") rather than as the link
+    list. The repo is the paper's reading list; the paper carries the
+    analysis. Seeds [[efficiency-metric-taxonomy]]. The repo remains the
+    seed for later `/discover` runs on memory compression and
+    tool-selection cost.
+
+**Totals: ingested 5, declined 1, already in graph 4.**

@@ -5,8 +5,10 @@ status: seedling
 added: "2026-05-21"
 sources:
   - literature/papers/hambardzumyan2026aira.md
+  - literature/papers/lupidi2026airs.md
 related_concepts:
   - structural-bottlenecks-in-research-agents
+  - fixed-budget-evaluation-protocol
 related_experiments: []
 tags:
   - evaluation

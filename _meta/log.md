@@ -23,3 +23,9 @@ skills; read by `/lint`.
 2026-08-20 02:27 fetch-paper 2603.12634 → raw/papers/li2026spend.pdf
 2026-08-20 02:27 fetch-paper 2603.29632 → raw/papers/shen2026empirical.pdf
 2026-08-20 02:27 fetch-paper 2601.14192 → raw/papers/yang2026toward.pdf
+2026-08-20 02:45 ingest raw/papers/lupidi2026airs.pdf
+2026-08-20 02:45 ingest raw/papers/liu2025mlagent.pdf
+2026-08-20 02:45 ingest raw/papers/li2026spend.pdf
+2026-08-20 02:45 ingest raw/papers/shen2026empirical.pdf
+2026-08-20 02:45 ingest raw/papers/yang2026toward.pdf
+2026-08-20 02:45 curate 2026-05-21-resource-aware-agentic-systems.md ingested=5 declined=1 dup=4

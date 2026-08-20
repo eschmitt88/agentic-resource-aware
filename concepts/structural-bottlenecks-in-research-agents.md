@@ -5,10 +5,13 @@ status: seedling
 added: "2026-05-21"
 sources:
   - literature/papers/hambardzumyan2026aira.md
+  - literature/papers/lupidi2026airs.md
+  - literature/papers/liu2025mlagent.md
 related_concepts:
   - asynchronous-multi-gpu-worker-pool
   - hidden-consistent-evaluation
   - react-agent-operator
+  - fixed-budget-evaluation-protocol
 related_experiments: []
 tags:
   - taxonomy
