@@ -18,3 +18,8 @@ skills; read by `/lint`.
 2026-05-22 01:30 defer proposal priority-weighted-admission-replay (premature optimization)
 2026-05-22 01:30 design-doc docs/system-design/01-requirements.md (draft)
 2026-05-22 02:15 design-doc docs/system-design/01-requirements.md (rev-2: autonomy-first; P1-P7; R10-R14; N7-N11)
+2026-08-20 02:27 fetch-paper 2602.06855 → raw/papers/lupidi2026airs.pdf
+2026-08-20 02:27 fetch-paper 2505.23723 → raw/papers/liu2025mlagent.pdf
+2026-08-20 02:27 fetch-paper 2603.12634 → raw/papers/li2026spend.pdf
+2026-08-20 02:27 fetch-paper 2603.29632 → raw/papers/shen2026empirical.pdf
+2026-08-20 02:27 fetch-paper 2601.14192 → raw/papers/yang2026toward.pdf
