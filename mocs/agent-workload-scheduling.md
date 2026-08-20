@@ -15,6 +15,7 @@ member_concepts:
   - worktree-isolated-parallel-search
 related_mocs:
   - autonomous-research-agent-architecture
+  - budget-aware-evaluation
 tags:
   - scheduling
   - coordinator
