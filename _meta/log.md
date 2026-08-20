@@ -29,3 +29,4 @@ skills; read by `/lint`.
 2026-08-20 02:45 ingest raw/papers/shen2026empirical.pdf
 2026-08-20 02:45 ingest raw/papers/yang2026toward.pdf
 2026-08-20 02:45 curate 2026-05-21-resource-aware-agentic-systems.md ingested=5 declined=1 dup=4
+2026-08-20 02:50 promote-moc declined — no ripe un-mapped cluster; extended agent-workload-scheduling (7 → 9 concepts)
